@@ -1,5 +1,6 @@
-project(ctci-c++)
+project(ElementsOfProgrammingInterviews)
 cmake_minimum_required(VERSION 2.6)
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -I -D -fPIC")
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 message("cmake source dir: " ${CMAKE_CURRENT_SOURCE_DIR})
@@ -18,6 +19,9 @@ include_directories (
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_BINARY_DIR}
 )
-add_library(CppUnitLiteCppFiles CppUnitLite/Test.cpp CppUnitLite/TestRegistry.cpp CppUnitLite/TestResult.cpp)
+
+# Build CppUnitLite
+add_subdirectory(CppUnitLite)
+
 add_subdirectory(src)
 
