@@ -1,19 +1,23 @@
-cmake_minimum_required(VERSION 2.6)
-SET(CMAKE_VERBOSE_MAKEFILE ON)
-MACRO(SUBDIRLIST result curdir)
-  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
-  SET(dirlist "")
-  FOREACH(child ${children})
-    IF(IS_DIRECTORY ${curdir}/${child})
-        LIST(APPEND dirlist ${child})
-    ENDIF()
-  ENDFOREACH()
-  SET(${result} ${dirlist})
-ENDMACRO()
-
-message("MY_CURRENT_DIR:" ${CMAKE_CURRENT_SOURCE_DIR})
-SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
-
-FOREACH(subdir ${SUBDIRS})
-    ADD_SUBDIRECTORY(${subdir})
-ENDFOREACH()
+cmake_minimum_required(VERSION 2.6)    
+    file(GLOB test_srcs "*/*.cpp")
+    foreach(src ${test_srcs})
+        get_filename_component(targetName ${src} NAME_WE)
+        message("target: " ${targetName})
+        add_executable(${targetName} ${src})
+        add_custom_target(${targetName}.run ${targetName} ./${targetName})
+        target_link_libraries(${targetName} CppUnitLite ${BOOST_LIBRARIES})
+			add_custom_target(valgrind_${targetName} 
+				COMMAND  ${targetName} &
+				valgrind
+					--leak-check=full
+					--show-reachable=yes
+					--track-fds=yes
+					--error-exitcode=1
+					--track-origins=yes
+					--tool=memcheck
+					#--log-file=${CMAKE_CURRENT_BINARY_DIR}/valgrind.log.${case_name}
+					${CMAKE_CURRENT_BINARY_DIR}/${targetName}
+				WORKING_DIRECTORY
+					${CMAKE_CURRENT_BINARY_DIR}
+			)
+	endforeach(src)
